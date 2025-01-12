@@ -5,21 +5,34 @@ from .serializers import *
 from rest_framework import status
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def director_detail_api_view(request, id):
     try:
         director = Director.objects.get(id=id)
     except Director.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    data = DirectorSerializer(director).data
-    return Response(data=data)
+    if request.method == 'PUT':
+        director.name = request.data.get('name')
+        return Response(data=DirectorItemSerializer(director).data, status=status.HTTP_201_CREATED)
+    elif request.method == 'DELETE':
+        director.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(http_method_names=['GET'])
+@api_view(http_method_names=['GET', 'POST'])
 def directors_list_api_view(request):
-    directors = Director.objects.all()
-    list_ = DirectorSerializer(instance=directors, many=True).data
-    return Response(data=list_)
+    if request.method == 'GET':
+        directors = Director.objects.all()
+        list_ = DirectorSerializer(instance=directors, many=True).data
+        return Response(data=list_)
+    elif request.method == 'POST':
+        name = request.data.get('name')
+
+        director = Director.objects.create(
+            name=name,
+        )
+        return Response(data=DirectorItemSerializer(director).data, status=status.HTTP_201_CREATED)
+
 
 
 @api_view(['GET'])
