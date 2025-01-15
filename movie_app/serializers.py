@@ -38,3 +38,14 @@ class MovieSerializer(serializers.ModelSerializer):
             return average
         return None
 
+class DirectorValidateSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+class MovieValidateSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    description = serializers.CharField()
+    duration = serializers.IntegerField()
+
+class ReviewValidateSerializer(serializers.Serializer):
+    text = serializers.CharField()
+    grade = serializers.IntegerField()
